@@ -1,4 +1,7 @@
-mport random
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+import random
 import pandas as pd
 import time
 import undetected_chromedriver as uc
@@ -30,28 +33,40 @@ user_agents = [
     "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
 ]
 
-# *1. Zufälligen User-Agent auswählen*
+# **1. Zufälligen User-Agent auswählen**
 random_user_agent = random.choice(user_agents)
 
 # Optionen für Chrome
 options = uc.ChromeOptions()
 options.add_argument("--start-maximized")  # Fenster maximieren
 options.add_argument("--disable-extensions")  # Erweiterungen deaktivieren
-options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+options.add_argument(f"user-agent={random_user_agent}")
 
 # ChromeDriver mit Optionen und Pfad starten
 driver = uc.Chrome(options=options, executable_path=chromedriver_path)
 driver.maximize_window()
 
+driver.set_page_load_timeout(300)  # Timeout auf 180 Sekunden setzen
+
 # Hauptseite öffnen
 driver.get("https://www.mindat.org/loc-7103.html")
-driver.implicitly_wait(10)
+
+# Wartezeit zwischen 5 und 15 Sekunden zufällig wählen
+time.sleep(random.uniform(5, 15))
+
+try:
+    WebDriverWait(driver, 180).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+except TimeoutException:
+    print("Seite hat zu lange geladen und wurde nicht vollständig geladen.")
+
+driver.implicitly_wait(20)
+
 
 def get_all_links():
     """Sammelt bis zu 3 relevante Links zu Unterseiten."""
     location_links = set()
 
-    while len(location_links) < 3:
+    while True:
         new_links = set()
         location_elements = driver.find_elements(By.XPATH, "//a[contains(@href, '/loc-')]")
 
@@ -61,22 +76,29 @@ def get_all_links():
                 new_links.add(link)
 
             # Sofort stoppen, wenn 3 Links erreicht wurden
-            if len(location_links) + len(new_links) >= 3:
+            if len(location_links) + len(new_links) >= 2600:
                 break
 
         location_links.update(new_links)
 
         # Falls 3 Links erreicht wurden oder keine neuen gefunden wurden → Beenden
-        if len(location_links) >= 3 or not new_links:
+        if len(location_links) >= 2600 or not new_links:
             break
 
         # Keine weiteren Seiten aufrufen, wenn Limit erreicht wurde
-        if len(location_links) >= 3:
+        if len(location_links) >= 2600:
             break
 
         for link in new_links:
             driver.get(link)
-            time.sleep(2)  # Kleine Pause zum Laden der Seite
+            # Warte, bis das <body>-Tag sichtbar ist
+            WebDriverWait(driver, random.uniform(5, 15)).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+
+            # Dann die zufällige Wartezeit hinzufügen
+            time.sleep(random.uniform(5, 15))  # Warten zwischen 5 und 15 Sekunden
+            print(f"Seite {link} vollständig geladen.")
 
     return list(location_links)
 
@@ -123,8 +145,8 @@ def extract_data_from_page():
     found_minerals = [mineral.strip() for mineral in newlocminlist if mineral.strip() not in ["ⓘ", "✪"]]
 
     # Vordefinierte Mineralien hinzufügen (falls gewünscht)
-    predefined_minerals = ["Quarz", "Pyrit", "Calcit"]  # Beispielhafte vordefinierte Liste
-    all_minerals = list(set(found_minerals + predefined_minerals))  # Keine Duplikate
+
+    all_minerals = list(set(found_minerals))  # Keine Duplikate
 
     # Ergebnis-Dictionary mit ALLEN Daten
     data = {
@@ -148,9 +170,21 @@ def extract_data_from_page():
 data_list = []
 all_links = get_all_links()
 
+# Checkpoint einlesen (falls vorhanden)
+checkpoint_file = "checkpoint.txt"
+start_index = 0
+try:
+    with open(checkpoint_file, "r") as f:
+        start_index = int(f.read().strip())
+        print(f"Fortschritt gefunden, starte bei Index: {start_index}")
+except FileNotFoundError:
+    print("Kein Checkpoint gefunden, starte von vorne.")
+
+
 STOP_SCRAPING = False  # Falls du das Scraping abbrechen willst, auf True setzen
 
-for link in all_links:
+
+for i, link in enumerate(all_links[start_index:], start=start_index):
     if STOP_SCRAPING:
         print("Scraping wurde manuell gestoppt.")
         break
@@ -179,6 +213,15 @@ for link in all_links:
             else:
                 print(f"Keine Daten auf {link} gefunden.")
             break  # Erfolgreiches Laden, keine weiteren Versuche nötig
+
+        except InvalidSessionIdException:
+            print(f"Fehler bei der Sitzung, Treiber wird neu gestartet für {link}")
+            driver.quit()  # Beende die aktuelle Sitzung vollständig
+            driver = uc.Chrome(
+                options=options)  # Starte eine neue Sitzung (executable_path ist optional, da uc es oft automatisch findet)
+            driver.maximize_window()  # Versuche es mit der neuen Sitzung
+            time.sleep(3)
+
         except Exception as e:
             print(f"Fehler beim Laden von {link} (Versuch {attempts + 1} von {max_attempts}): {e}")
             attempts += 1
@@ -188,8 +231,16 @@ for link in all_links:
         print(f"Seite {link} konnte nach {max_attempts} Versuchen nicht geladen werden. Wird als Fehler gespeichert.")
         data_list.append({"Mindat Locality ID": link, "Fehler": "Seite konnte nicht geladen werden"})
 
-df = pd.DataFrame(data_list)
-df.to_csv("mindat_data.csv", index=False)
+    with open(checkpoint_file, "w") as f:
+        f.write(str(i + 1))
 
-driver.quit()
-print("Scraping abgeschlossen, Daten gespeichert in mindat_data.csv")
+# Test: Kann eine CSV-Datei gespeichert werden?
+test_data = [{"Test": "Erfolgreich"}]
+test_df = pd.DataFrame(test_data)
+
+try:
+    df = pd.DataFrame(data_list)
+    df.to_csv(r"C:\Users\Barbara Maier\Desktop\mindat_data.csv", index=False)
+    print("Datei erfolgreich gespeichert!")
+except Exception as e:
+    print(f"Fehler beim Speichern der Datei: {e}")
