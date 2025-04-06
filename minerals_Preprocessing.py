@@ -45,13 +45,21 @@ df_clean = df_clean.copy()
 df_clean['Mineral'] = df_clean['Mineral'].str.strip("'").str.strip('"') # get rid of '' wrappers
 df_clean['Mineral'] = df_clean['Mineral'].str.replace(r'\bvar\.\s*', '', regex=True).str.strip() # get rid of var. for various at the beginning of the mineral name
 df_clean['Mineral'] = df_clean['Mineral'].str.replace(r'\?\s*$', '', regex=True).str.strip() # Remove question mark at the end of the mineral name
+df_clean['Mineral'] = (df_clean['Mineral'].str.replace(r'\b(Group|Subgroup|Supergroup)\b', '', regex=True)
+                       .str.replace(r'\s+', ' ', regex=True).str.strip()) # get rid of Group / Supergroup / Subgroup
 unique_minerals = df_clean['Mineral'].unique()
 unique_minerals = sorted(unique_minerals)
 
 print(f"Number of unique minerals: {df_clean['Mineral'].nunique()}")
 
 
+# df_clean.to_csv('clean_mindat.csv', index=False)
 
-df_clean.to_csv('clean_mindat.csv', index=False)
+# Filter minerals containing a hyphen
+hyphenated_minerals = df_clean[df_clean['Mineral'].str.contains('-', regex=False)]
 
-df_clean.to_csv('clean_mindat.csv', index=False)
+# Optionally: get the unique names as a list
+hyphenated_list = hyphenated_minerals['Mineral'].unique().tolist()
+
+# Preview the list
+print(hyphenated_list)
