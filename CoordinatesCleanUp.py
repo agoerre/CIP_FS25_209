@@ -1,4 +1,4 @@
-# Cleaning of Coordinates and Enrichment with Altitude
+# Cleaning of Coordinates and Enrichment with Altitude (mit 3 API-Fallbacks, ohne GeoTIFF)
 import re
 import pandas as pd
 import requests
@@ -10,9 +10,6 @@ df_coordinates = df.copy()
 # --- 2. Hilfsfunktionen ---
 
 def is_decimal_coord(coord_str):
-    """
-    Prüft, ob der String im Format 'dezimal,dezimal' vorliegt.
-    """
     try:
         lat_str, lon_str = coord_str.split(',')
         float(lat_str.strip())
@@ -36,14 +33,10 @@ def dms_to_decimal(dms_part):
     return None
 
 def convert_dms_or_keep(coord_str):
-    """
-    Behalte bereits korrekte Dezimalwerte. Konvertiere nur echte DMS-Einträge.
-    """
     if pd.isna(coord_str) or 'Unknown' in coord_str:
         return None
     
-    coord_str = re.sub(r'\(.*?\)', '', coord_str)
-    coord_str = coord_str.strip()
+    coord_str = re.sub(r'\(.*?\)', '', coord_str).strip()
     
     if is_decimal_coord(coord_str):
         return coord_str
@@ -64,7 +57,15 @@ def convert_dms_or_keep(coord_str):
 df_coordinates['Latitude & Longitude'] = df_coordinates['Latitude & Longitude'].apply(convert_dms_or_keep)
 df_coordinates_cleaned = df_coordinates.dropna(subset=['Latitude & Longitude']).reset_index(drop=True)
 
-# --- 4. Höhen abfragen ---
+# --- 4. Ungenaue Koordinaten entfernen ---
+rough_coords = [
+    "46.00000,8.00000", "46.00000,7.00000", "46.00000,6.00000", "46.00000,9.00000",
+    "46.00000,10.00000", "45.00000,7.00000", "47.00000,7.00000", "47.00000,8.00000",
+    "47.00000,9.00000"
+]
+df_coordinates_cleaned = df_coordinates_cleaned[~df_coordinates_cleaned['Latitude & Longitude'].isin(rough_coords)].reset_index(drop=True)
+
+# --- 5. Höhen-APIs ---
 
 def get_elevation(lat, lon):
     url = "https://api.open-elevation.com/api/v1/lookup"
@@ -76,32 +77,84 @@ def get_elevation(lat, lon):
             if "results" in data and len(data["results"]) > 0:
                 return data["results"][0]["elevation"]
     except Exception as e:
-        print(f"Fehler bei der Höhenabfrage für {lat}, {lon}: {e}")
+        print(f"[OpenElevation] Fehler bei {lat},{lon}: {e}")
     return None
 
-def fetch_altitude(coord_str):
+def get_altitude_opentopodata(lat, lon):
+    url = "https://api.opentopodata.org/v1/srtm90m"
+    params = {"locations": f"{lat},{lon}"}
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            if "results" in data and len(data["results"]) > 0:
+                return data["results"][0]["elevation"]
+    except Exception as e:
+        print(f"[OpenTopoData] Fehler bei {lat},{lon}: {e}")
+    return None
+
+def get_elevation_openmeteo(lat, lon):
+    url = "https://api.open-meteo.com/v1/elevation"
+    params = {"latitude": lat, "longitude": lon}
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("elevation")
+    except Exception as e:
+        print(f"[Open-Meteo] Fehler bei {lat},{lon}: {e}")
+    return None
+
+def fetch_altitude_with_fallback(coord_str):
     try:
         lat_str, lon_str = coord_str.split(',')
         lat, lon = float(lat_str), float(lon_str)
-        return get_elevation(lat, lon)
+
+        # 1. open-elevation
+        alt = get_elevation(lat, lon)
+        if alt is not None:
+            return alt
+
+        # 2. opentopodata
+        alt = get_altitude_opentopodata(lat, lon)
+        if alt is not None:
+            return alt
+
+        # 3. open-meteo
+        alt = get_elevation_openmeteo(lat, lon)
+        return alt
+
     except Exception as e:
-        print(f"Fehler beim Verarbeiten der Koordinate {coord_str}: {e}")
+        print(f"[Fehler] bei Koordinate {coord_str}: {e}")
         return None
 
-# Neues DataFrame für angereicherte Daten
+# --- 6. Enrichment mit Höhenmeter ---
 df_coordinates_enriched = df_coordinates_cleaned.copy()
 
-# Altitude-Spalte einfügen
 insert_position = df_coordinates_enriched.columns.get_loc('Latitude & Longitude') + 1
 df_coordinates_enriched.insert(insert_position, 'Altitude', None)
 
-# Höhen abfragen und hinzufügen
-df_coordinates_enriched['Altitude'] = df_coordinates_enriched['Latitude & Longitude'].apply(fetch_altitude)
+# Nur fehlende Höhen füllen
+missing = df_coordinates_enriched['Altitude'].isna()
+df_coordinates_enriched.loc[missing, 'Altitude'] = df_coordinates_enriched.loc[missing, 'Latitude & Longitude'].apply(fetch_altitude_with_fallback)
 
-# --- 5. Excel-Dateien exportieren ---
-with pd.ExcelWriter("mindat_Coordinates_all_versions.xlsx") as writer:
+# Altitude-Spalte bereinigen und formatieren
+def clean_altitude(value):
+    if pd.isna(value):
+        return None
+    if isinstance(value, list) and len(value) > 0:
+        value = value[0]  # Falls API z.B. [1374.0] zurückgegeben hat
+    try:
+        return int(float(value))  # Rundet ggf. Float ab
+    except:
+        return None
+
+df_coordinates_enriched['Altitude'] = df_coordinates_enriched['Altitude'].apply(clean_altitude)
+
+# --- 7. Exportieren in Excel ---
+with pd.ExcelWriter("mindat_Coordinates_final.xlsx") as writer:
     df.to_excel(writer, sheet_name="Original", index=False)
     df_coordinates_cleaned.to_excel(writer, sheet_name="Cleaned", index=False)
     df_coordinates_enriched.to_excel(writer, sheet_name="Enriched", index=False)
 
-
+print("✅ Datei erfolgreich erstellt: mindat_Coordinates_final.xlsx")
