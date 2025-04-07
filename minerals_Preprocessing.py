@@ -40,6 +40,8 @@ df_clean = df_normalized[df_normalized['Mineral'].notna() & (df_normalized['Mine
 
 print(df_clean.info())
 
+df_clean.to_csv('clean_mindat.csv', index=False)
+
 # Further preprocessing
 df_clean = df_clean.copy()
 df_clean['Mineral'] = df_clean['Mineral'].str.strip("'").str.strip('"') # get rid of '' wrappers
@@ -53,9 +55,6 @@ unique_minerals = df_clean['Mineral'].unique()
 unique_minerals = sorted(unique_minerals)
 
 print(f"Number of unique minerals: {df_clean['Mineral'].nunique()}")
-
-
-df_clean.to_csv('clean_mindat.csv', index=False)
 
 # Filter minerals containing a hyphen
 hyphenated_minerals = df_clean[df_clean['Mineral'].str.contains('-', regex=False)]
