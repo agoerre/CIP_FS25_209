@@ -26,12 +26,12 @@ Within this repository the following content is available which was used for the
     - 03-8_Finalized_Dataset: This is the finalized dataset which was used for the Analysis. 
 
 **04 Analysis of Dataset:**
-    - 04_RQ1_Spatial-Distribution: This is the code and analysis of the first ResearchQuestion regarding the spatial Distribution. 
-    - 04_RQ2_Occurence-Frequency: This is the code and analysis of the second ResearchQuestion regarding the highest frequency of occurence of the crystal types. 
-    - 04_RQ3-1_Statistical-Correlation: This is the code and analysis of the third ResearchQuestion regarding the statistical correlation between crystal occurences and elevation levels. 
-        - 04_RQ3-2_Visualization-Scatterplots:
-        - 04_RQ3-3_Visualization-Boxplots:
-        - 04_RQ3-4_Viszualization-Histogram:
+    - 04_RQ1_Spatial-Distribution: This is the code and analysis of the first Research Question regarding the spatial Distribution. 
+    - 04_RQ2_Occurence-Frequency: This is the code and analysis of the second Research Question regarding the highest frequency of occurence of the crystal types. 
+    - 04_RQ3-1_Statistical-Correlation: This is the code and analysis of the third Research Question regarding the statistical correlation between crystal occurences and elevation levels. 
+        - 04_RQ3-2_Visualization-Scatterplots: 2x2 Visualization of Scatterplots for all 4 combinations of 'Minerals' and 'Altitude' and their categories. 
+        - 04_RQ3-3_Visualization-Boxplots: 2x1 Visualization of Boxplots for the 'Altitude' and 'Altitude Category' with the 'Mineral Category'. 
+        - 04_RQ3-4_Viszualization-Histogram: 1x1 Visualization with a Histogram on the 'Mineral Category' by 'Altitude Category'.
 
 **05 Documentation:**
     - 05-1_CIP02_209_Feasability-Study: This is the submitted Feasability Study for the Project. 
