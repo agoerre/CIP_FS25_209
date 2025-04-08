@@ -4,7 +4,7 @@ Github Repository for the project "Crystals in Switzerland"
 Within this repository the following content is available which was used for the whole Project Process:
 
 **00 Info and Structure:**
-    - 00_README.md: This README file gives a short overview of how the Github Repository is set up and organized. 
+    - 00_README: This README file gives a short overview of how the Github Repository is set up and organized. 
 
 **01 Scraping:**
     - 01-1_Initial_Scraping-Code:
