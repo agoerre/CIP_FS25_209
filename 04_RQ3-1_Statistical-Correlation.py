@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 # --- STEP 1: LOAD & CLEAN DATASET ---
 # Load your finalized dataset
-df = pd.read_excel("03_Finalized_Dataset.xlsx")
+df = pd.read_excel("03-8_Finalized_Dataset.xlsx")
 
 # Drop rows with missing values in relevant columns
 df_clean = df.dropna(subset=["Altitude", "Mineral", "Mineral Category", "Altitude Category"])
@@ -46,6 +46,7 @@ def run_analysis(x, y, df, label):
 
 # --- STEP 4: RUN ANALYSIS FOR ALL COMBINATIONS ---
 # The following combinations will be analyzed:
+print("\nCORRELATION ANALYSIS RESULTS FOR ALL COMBINATIONS:")
 # 1. Altitude vs Mineral
 run_analysis("Altitude", "Mineral_enc", df_clean, "Altitude vs Mineral")
 
