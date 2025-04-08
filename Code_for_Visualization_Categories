@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import to_rgb
+
+# Entferne 'SONSTIGES', falls vorhanden
+df = df[df['Category'] != 'SONSTIGES']
+
+# Häufigkeit der Kategorien zählen
+category_counts = df['Category'].value_counts()
+
+# Sortiert für bessere Lesbarkeit (klein nach groß)
+category_counts = category_counts.sort_values()
+
+# Farben
+colors = plt.cm.tab20.colors
+
+# Plot erstellen
+plt.figure(figsize=(10, 12))
+bars = plt.barh(category_counts.index, category_counts.values, color=colors[:len(category_counts)])
+
+# Werte rechts daneben anzeigen
+for bar in bars:
+    width = bar.get_width()
+    plt.text(width + 0.2, bar.get_y() + bar.get_height()/2,
+             str(int(width)),
+             va='center', fontsize=9, color='black')
+
+# Achsen und Titel
+plt.xlabel('Count')
+plt.title('Distribution of Mineral Categories (Horizontal Bar Chart)')
+plt.tight_layout()
+plt.show()
