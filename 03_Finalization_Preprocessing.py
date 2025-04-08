@@ -1,25 +1,27 @@
 ### This code is for finalizing the dataset for analysis by renaming columns, categorizing altitude, and saving the updated DataFrame to an Excel file. ###
 
-# --- Step 0: Import necessary libraries ---
+# --- STEP 0: IMPORT NECESSARY LIBRARIES ---
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 
-# --- Step 1: Load the dataset and make a copy ---
-# Replace with your actual file path
+
+# --- STEP 1: LOAD THE DATASET AND MAKE A COPY ---
 original_df = pd.read_csv("data_with_categories.csv")
 
 # Create a working copy
 df = original_df.copy()
 
-# --- Step 2: Rename specific columns ---
+
+# --- STEP 2: RENAME SPECIFIC COLUMNS ---
 df.rename(columns={
     "Type": "Location Type",
     "KÃ¶ppen climate type": "Climate Type",
     "Category": "Mineral Category"
 }, inplace=True)
 
-# --- Step 3: Define function to categorize altitude ---
+
+# --- STEP 3: DEFINE FUNCTION TO CATEGORIZE ALTITUDE ---
 def categorize_altitude(altitude):
     if altitude <= 600:
         return "Tiefland"
@@ -34,21 +36,25 @@ def categorize_altitude(altitude):
     else:
         return "Nivale Zone"
 
-# --- Step 4: Create the "Altitude Category" column ---
+
+# --- STEP 4: CREATE THE "Altitude Category" COLUMN ---
 df["Altitude Category"] = df["Altitude"].apply(categorize_altitude)
 
-# --- Step 5: Move the new column directly after "Altitude" ---
+
+# --- STEP 5: MOVE THE NEW COLUMN DIRECTLY AFTER "Altitude" ---
 altitude_index = df.columns.get_loc("Altitude")
 columns = list(df.columns)
 # Remove the "Altitude Category" column and re-insert it right after "Altitude"
 columns.insert(altitude_index + 1, columns.pop(columns.index("Altitude Category")))
 df = df[columns]
 
-# --- Step 6: Save the updated DataFrame to a new Excel file ---
+
+# --- STEP 6: SAVE THE UPDATED DATAFRAME TO A NEW EXCEL FILE ---
 excel_path = "03_Finalized_Dataset.xlsx"
 df.to_excel(excel_path, index=False)
 
-# --- Step 7: Auto-adjust column widths using openpyxl ---
+
+# --- STEP 7: AUTO-ADJUST COLUMN WIDTHS USING OPENPYXL ---
 wb = load_workbook(excel_path)
 ws = wb.active
 
