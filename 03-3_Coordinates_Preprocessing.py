@@ -1,14 +1,15 @@
 ### This Code is for the cleaning of Coordinates and Enrichment with Altitude (with 3 API fallbacks, no GeoTIFF)
 
+# --- STEP 0: IMPORT NECESSARY LIBRARIES ---
 import re
 import pandas as pd
 import requests
 
-# --- 1. Load original data ---
-df = pd.read_csv("mindat_Coordinates_initial.csv")  # Load original CSV
+# --- STEP 1: LOAD ORIGINAL DATA ---
+df = pd.read_csv("Data/01-3_Initial_Dataset.csv")  # Load original CSV
 df_coordinates = df.copy()  # Work on a copy to preserve the original
 
-# --- 2. Helper functions ---
+# --- STEP 2: HELPER FUNCTIONS ---
 
 # Check if the coordinate is already in decimal format (e.g., "46.12345, 7.98765")
 def is_decimal_coord(coord_str):
@@ -64,12 +65,12 @@ def convert_dms_or_keep(coord_str):
     
     return None
 
-# --- 3. Clean coordinates ---
+# --- STEP 3: CLEAN COORDINATES ---
 # Apply coordinate cleaning and drop rows where conversion failed
 df_coordinates['Latitude & Longitude'] = df_coordinates['Latitude & Longitude'].apply(convert_dms_or_keep)
 df_coordinates_cleaned = df_coordinates.dropna(subset=['Latitude & Longitude']).reset_index(drop=True)
 
-# --- 4. Remove rough/placeholder coordinates ---
+# --- STEP 4: REMOVE ROUGH/PLACEHOLDER COORDINATES ---
 # Manually identified placeholder coordinates (usually rounded values)
 rough_coords = [
     "46.00000,8.00000", "46.00000,7.00000", "46.00000,6.00000", "46.00000,9.00000",
@@ -79,7 +80,7 @@ rough_coords = [
 # Remove entries with these placeholder coordinates
 df_coordinates_cleaned = df_coordinates_cleaned[~df_coordinates_cleaned['Latitude & Longitude'].isin(rough_coords)].reset_index(drop=True)
 
-# --- 5. Altitude APIs ---
+# --- STEP 5: ALTITUDE API'S ---
 
 # Use Open-Elevation API to get elevation
 def get_elevation(lat, lon):
@@ -145,7 +146,7 @@ def fetch_altitude_with_fallback(coord_str):
         print(f"[Fehler] bei Koordinate {coord_str}: {e}")
         return None
 
-# --- 6. Enrich data with altitude ---
+# --- STEP 6: ENRICH DATA WITH ALTITUDE ---
 
 df_coordinates_enriched = df_coordinates_cleaned.copy()
 
@@ -172,10 +173,10 @@ def clean_altitude(value):
 
 df_coordinates_enriched['Altitude'] = df_coordinates_enriched['Altitude'].apply(clean_altitude)
 
-# --- 7. Export all stages of the data to Excel ---
-with pd.ExcelWriter("mindat_Coordinates_final.xlsx") as writer:
+# --- STEP 7: EXPORT ALL STAGES OF THE DATA TO EXCEL ---
+with pd.ExcelWriter("Data/03-4_Coordinates_Cleaned-dataset.xlsx") as writer:
     df.to_excel(writer, sheet_name="Original", index=False)  # Raw data
     df_coordinates_cleaned.to_excel(writer, sheet_name="Cleaned", index=False)  # Cleaned coordinates
     df_coordinates_enriched.to_excel(writer, sheet_name="Enriched", index=False)  # With altitude
 
-print("✅ Datei erfolgreich erstellt: mindat_Coordinates_final.xlsx")
+print("✅ Datei erfolgreich erstellt und im Subfolder 'Data' gespeichert: '03-4_Coordinates_Cleaned-dataset.xlsx'")

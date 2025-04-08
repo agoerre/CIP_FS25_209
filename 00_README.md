@@ -1,7 +1,7 @@
 # CIP_FS25_209
 Github Repository for the project "Crystals in Switzerland"
 
-Within this repository the following content is available which was used for the whole Project Process:
+Within this repository the following content is available which was used for the whole Project Process. All Datasets are stored in the subfolder "Data".
 
 **00 Info and Structure:**
     - 00_README: This README file gives a short overview of how the Github Repository is set up and organized. 
@@ -11,7 +11,7 @@ Within this repository the following content is available which was used for the
     - 01-2_Final_Scraping-Code: 
     - 01-3_Initial_Dataset:
 
-**02 API *(tried to access data of mindat.org via API as well - did not work)*:**
+**02 API *(tried to access data of mindat.org via API as well - did not come to the same extent of data as we reached through Scraping)*:**
     - 02-1_Initial_Mindat-API-test:
     - 02-2_Second_Mindat-API-test:
 
