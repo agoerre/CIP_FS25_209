@@ -8,7 +8,7 @@ import requests
 # --- Load and preprocess data ---
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data_for_analysis.csv")
+    df = pd.read_csv("../data_for_analysis.csv")
     df[['Latitude', 'Longitude']] = df['Latitude & Longitude'].str.split(',', expand=True).astype(float)
     return df
 

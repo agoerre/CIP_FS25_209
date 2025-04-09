@@ -2,7 +2,7 @@
 import pandas as pd
 
 # load the original dataframe with scrapped data from mindat.org
-file_path = "mindat_Coordinates_final.xlsx"
+file_path = "Data/03-4_Coordinates_Cleaned-dataset.xlsx"
 
 # load the data
 df = pd.read_excel(file_path, sheet_name="Enriched")
@@ -55,15 +55,6 @@ unique_minerals = df_clean['Mineral'].unique()
 unique_minerals = sorted(unique_minerals)
 
 print(f"Number of unique minerals: {df_clean['Mineral'].nunique()}")
-
-# Filter minerals containing a hyphen
-hyphenated_minerals = df_clean[df_clean['Mineral'].str.contains('-', regex=False)]
-
-# Optionally: get the unique names as a list
-hyphenated_list = hyphenated_minerals['Mineral'].unique().tolist()
-
-# Preview the list
-print(hyphenated_list)
 
 mineral_value_counts = df_clean['Mineral'].value_counts().reset_index()
 mineral_value_counts.columns = ['Mineral', 'Count']
