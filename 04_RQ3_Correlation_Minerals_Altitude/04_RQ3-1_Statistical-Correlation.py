@@ -7,6 +7,7 @@ from scipy.stats import pearsonr, spearmanr
 import statsmodels.formula.api as smf
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 
 # --- STEP 1: LOAD & CLEAN DATASET ---
@@ -135,3 +136,27 @@ plt.ylabel("Count")
 plt.xticks(rotation=90)
 plt.tight_layout()
 plt.show()
+
+
+# --- STEP 8: REGRESSIONMODEL FOR EACH MINERAL CATEGORY SEPERATELY ---
+# This section runs a regression analysis for each mineral category separately.
+# It checks if the regression is significant and prints the results.
+print("\nREGRESSIONSANALYSE JE MINERAL-KATEGORIE:")
+
+def run_mineral_category_regressions(df):
+    kategorien = df["Mineral Category"].unique()
+    
+    for kategorie in kategorien:
+        df_kat = df[df["Mineral Category"] == kategorie]
+        
+        if len(df_kat) < 3:
+            continue  # Skip categories with less than 3 data points
+
+        model = smf.ols("Mineral_enc ~ Altitude", data=df_kat).fit()
+
+        if model.f_pvalue < 0.05:
+            print(f"\n➡ Significant Regression for Mineral Category: {kategorie}")
+            print(f"  R² = {model.rsquared:.3f}, p = {model.f_pvalue:.4f}")
+            print(model.summary())
+
+run_mineral_category_regressions(df_clean)

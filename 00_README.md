@@ -1,7 +1,7 @@
 # CIP_FS25_209
 Github Repository for the project "Crystals in Switzerland"
 
-Within this repository the following content is available which was used for the whole Project Process. All Datasets are stored in the subfolder "Data".
+Within this repository the following content is available which was used for the whole Project Process. All Datasets are stored in the subfolder "Data". All datasets, Python-files and Output for each research question is in an own subfolder. The Documentation is also stored in a subfolder. 
 
 **00 Info and Structure:**
     - 00_README: This README file gives a short overview of how the Github Repository is set up and organized. 
