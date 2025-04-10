@@ -16,7 +16,7 @@ response = requests.get(url, headers=headers)
 if response.status_code == 200:
     data = response.json()
     df = pd.json_normalize(data['results'])  # Adjust key based on actual response structure
-    df.to_csv("swiss_localities.csv", index=False)
+    df.to_csv("Data/Unused Data Dump/02-2_swiss_localities.csv", index=False)
     print(f"Success! Retrieved {len(df)} localities.")
 else:
     print(f"Failed with status code: {response.status_code}")

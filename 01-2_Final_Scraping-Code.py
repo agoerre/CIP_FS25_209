@@ -262,7 +262,7 @@ test_df = pd.DataFrame(test_data)
 try:
     # Try saving the data to a CSV file
     df = pd.DataFrame(data_list)
-    df.to_csv(r"C:\Users\Barbara Maier\Desktop\mindat_data.csv", index=False)
+    df.to_csv("Data/01-3_Initial_Dataset.csv", index=False)
     print("Datei erfolgreich gespeichert!")
 except Exception as e:
     print(f"Fehler beim Speichern der Datei: {e}")
