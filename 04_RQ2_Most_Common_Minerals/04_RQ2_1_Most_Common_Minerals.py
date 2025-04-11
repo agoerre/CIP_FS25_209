@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("Data/03-6_Minerals-Categorization_Cleaned-dataset.csv")
+df = pd.read_csv("../Data/03-4_Minerals-Categorization_Cleaned-dataset.csv")
 
 # Rock-forming mineral groups + gemstones
 rock_forming_and_gems = [
