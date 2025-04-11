@@ -174,9 +174,9 @@ def clean_altitude(value):
 df_coordinates_enriched['Altitude'] = df_coordinates_enriched['Altitude'].apply(clean_altitude)
 
 # --- STEP 7: EXPORT ALL STAGES OF THE DATA TO EXCEL ---
-with pd.ExcelWriter("Data/03-4_Coordinates_Cleaned-dataset.xlsx") as writer:
+with pd.ExcelWriter("Data/03-2_Coordinates_Cleaned-dataset.xlsx") as writer:
     df.to_excel(writer, sheet_name="Original", index=False)  # Raw data
     df_coordinates_cleaned.to_excel(writer, sheet_name="Cleaned", index=False)  # Cleaned coordinates
     df_coordinates_enriched.to_excel(writer, sheet_name="Enriched", index=False)  # With altitude
 
-print("✅ Datei erfolgreich erstellt und im Subfolder 'Data' gespeichert: '03-4_Coordinates_Cleaned-dataset.xlsx'")
+print("✅ Datei erfolgreich erstellt und im Subfolder 'Data' gespeichert: '03-2_Coordinates_Cleaned-dataset.xlsx'")

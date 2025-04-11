@@ -7,7 +7,7 @@ from openpyxl.utils import get_column_letter
 
 
 # --- STEP 1: LOAD THE DATASET AND MAKE A COPY ---
-original_df = pd.read_csv("Data/03-6_Minerals-Categorization_Cleaned-dataset.csv")
+original_df = pd.read_csv("Data/03-4_Minerals-Categorization_Cleaned-dataset.csv")
 
 # Create a working copy
 df = original_df.copy()
@@ -50,7 +50,7 @@ df = df[columns]
 
 
 # --- STEP 6: SAVE THE UPDATED DATAFRAME TO A NEW EXCEL FILE ---
-excel_path = "Data/03-8_Finalized_Dataset.xlsx"
+excel_path = "Data/03-6_Finalized_Dataset.xlsx"
 df.to_excel(excel_path, index=False)
 
 
@@ -70,4 +70,4 @@ for col_idx, column_cells in enumerate(ws.columns, 1):
     ws.column_dimensions[column].width = adjusted_width
 
 wb.save(excel_path)
-print("Finalized dataset saved as '03-8_Finalized_Dataset.xlsx' in the Data subfolder.")
+print("Finalized dataset saved as '03-6_Finalized_Dataset.xlsx' in the Data subfolder.")

@@ -2,7 +2,7 @@
 import pandas as pd
 
 # load the original dataframe with scrapped data from mindat.org
-file_path = "Data/03-4_Coordinates_Cleaned-dataset.xlsx"
+file_path = "Data/03-2_Coordinates_Cleaned-dataset.xlsx"
 
 # load the data
 df = pd.read_excel(file_path, sheet_name="Enriched")
@@ -39,8 +39,6 @@ print(df_normalized['Mineral'].nunique())
 df_clean = df_normalized[df_normalized['Mineral'].notna() & (df_normalized['Mineral'].str.strip() != '')]
 
 print(df_clean.info())
-
-df_clean.to_csv('03_2_Minerals_Cleaned_dataset.csv', index=False)
 
 # Further preprocessing
 df_clean = df_clean.copy()
@@ -207,4 +205,4 @@ def kategorien_ermitteln(mineral):
     # Assign Category 1
 df['Category'] = df['Mineral'].apply(kategorien_ermitteln)
 
-df.to_csv('Data/03-6_Minerals-Categorization_Cleaned-dataset.csv', index=False)
+df.to_csv('Data/03-4_Minerals-Categorization_Cleaned-dataset.csv', index=False)
