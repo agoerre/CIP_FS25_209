@@ -30,7 +30,6 @@ Within this repository the following content is available which was used for the
 **04 Analysis of Dataset:**
     - 04_RQ1_Spatial-Distribution: This is the code and analysis of the first Research Question regarding the spatial Distribution. 
             - app.py: includes the code for the streamlit app to create the heatmap and the filtering - enter "streamlit run app.py" in the respective directory to run the web app.
-            - data_for_analysis: Dataset on which the web app is built, copy of 03-4-Minerals_Categorization_Cleaned-dataset.
             - requirements.txt: Build file for the streamlit cloud service to specifiy the dependencies.
     - 04_RQ2_Occurence-Frequency: This is the code and analysis of the second Research Question regarding the highest frequency of occurence of the crystal types. 
     - 04_RQ3-1_Statistical-Correlation: This is the code and analysis of the third Research Question regarding the statistical correlation between crystal occurences and elevation levels. 
