@@ -12,7 +12,7 @@ import os
 
 # --- STEP 1: LOAD & CLEAN DATASET ---
 # Load your finalized dataset
-df = pd.read_excel("Data/03-6_Finalized_Dataset.xlsx")
+df = pd.read_excel("../Data/03-6_Finalized_Dataset.xlsx")
 
 # Drop rows with missing values in relevant columns
 df_clean = df.dropna(subset=["Altitude", "Mineral", "Mineral Category", "Altitude Category"])
