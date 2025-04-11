@@ -7,18 +7,18 @@ Within this repository the following content is available which was used for the
     - 00_README: This README file gives a short overview of how the Github Repository is set up and organized. 
 
 
-**01 Scraping:**
+**01 Scraping:** (Barbara main part, with help from Andreas and Sheena)
     - 01-1_Initial_Scraping-Code: First try to fetch data from Mindat, in directory "Unused Code Dump".
     - 01-2_Final_Scraping-Code: Code which was used to scrape the data from Mindat.
     - 01-3_Initial_Dataset: Dataset with the scraped data from Mindat, used for further processing in later steps.
 
 
-**02 API *(tried to access data of mindat.org via API as well - did not come to the same extent of data as we reached through Scraping)*:**
+**02 API *(tried to access data of mindat.org via API as well - did not come to the same extent of data as we reached through Scraping)*:** (Andreas)
     - 02-1_Mindat-API-test: Tried to fetch the Swiss localities via API (Beta) provided by Mindat, but data does not seem to be tagged sufficiently on the website (only 10 results), in directory "Unused Code Dump".
     - 02-2_swiss_localities: Result from the API request which was not used for further processing, in directory "Data/Unused Data Dump".
 
 
-**03 Preprocessing of Dataset *(was done seperately for different cleaning end enrichment topics)*:**
+**03 Preprocessing of Dataset *(was done seperately for different cleaning end enrichment topics)*:** (All 3 students evenly contributing)
     - 03-1_Coordinates_Preprocessing: Code for cleaning of column "Latitude & Longitude" to receive the same format for every entry and to enhance the dataset with a new column for the "Altitude". The altitude was entered with different API's. 
     - 03-2_Coordinates_Cleaned-dataset: Dataset based on 01-3_Initial_Dataset and cleaned with the code 03-1_Coordinates_Preprocessing for a new dataset. 
     - 03-3_Minerals_Preprocessing: Python script which includes the code for the normalization, the cleansing of names and the categorization of minerals.
@@ -27,7 +27,7 @@ Within this repository the following content is available which was used for the
     - 03-6_Finalized_Dataset: This is the finalized dataset which was used for the Analysis.
 
 
-**04 Analysis of Dataset:**
+**04 Analysis of Dataset:** (Andreas - RQ1, Barbara - RQ2, Sheena - RQ3)
     - 04_RQ1_Spatial-Distribution: This is the code and analysis of the first Research Question regarding the spatial Distribution. 
             - app.py: includes the code for the streamlit app to create the heatmap and the filtering - enter "streamlit run app.py" in the respective directory to run the web app.
             - data_for_analysis: Dataset on which the web app is built, copy of 03-4-Minerals_Categorization_Cleaned-dataset.
@@ -39,6 +39,6 @@ Within this repository the following content is available which was used for the
         - 04_RQ3-4_Viszualization-Histogram: 1x1 Visualization with a Histogram on the 'Mineral Category' by 'Altitude Category'.
 
 
-**05 Documentation:**
+**05 Documentation:** (All 3 students evenly contributing)
     - 05-1_CIP02_209_Feasability-Study: This is the submitted Feasability Study for the Project. 
     - 05-2_CIP02_209_Documentation: This is the final Project Documentation. 
